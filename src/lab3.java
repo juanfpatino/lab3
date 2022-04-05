@@ -14,9 +14,9 @@ public class lab3 {
 
         while(true){
 
-            String[] line = ss.split(" ");
+            String[] line = ss.split("\\\\s*[^a-zA-Z]+\\\\s*");
 
-            Example e = new Example(new ArrayList<>(Arrays.asList(line).subList(1, line.length)), line[0].equals("en"));
+            Example e = new Example(new ArrayList<>(Arrays.asList(line)), line[0].equals("en"));
 
             hypothesisSpace.add(e);
 
@@ -34,11 +34,12 @@ public class lab3 {
         }
 
 
+        //todo: make arraylist of "attributes" (i.e. first one being the function words)
         System.out.println(learn_decision_tree(hypothesisSpace, new ArrayList<>(Arrays.asList(0,1,2,3,4,5,6,7)) , hypothesisSpace));
 
     }
 
-    private static int importance(ArrayList<Integer> attributes, ArrayList<Example> examples){//returns the index of the most important predicate
+    private static int importance(ArrayList<String> attributes, ArrayList<Example> examples){//returns the index of the most important predicate
 
         //return the attribute with the most information gain
 
@@ -47,8 +48,6 @@ public class lab3 {
         double[] d = new double[8];
 
         for (int i = 0; i < 8; i++) {
-
-
 
             if(!attributes.contains(i))continue;
 
@@ -172,6 +171,7 @@ public class lab3 {
 
     }
 
+    //learn
     private static Tree learn_decision_tree(ArrayList<Example> examples, ArrayList<Integer> attributes, ArrayList<Example> parent_examples){
 
         if(examples.size() == 0){
