@@ -2,7 +2,7 @@ import java.util.Arrays;
 
 public class Attribute { //takes in a word, determines if it matches a certain attribute
 
-    public int id = 0;
+    public int id;
     //1 = function word
 
     public Attribute(int id){
@@ -13,16 +13,11 @@ public class Attribute { //takes in a word, determines if it matches a certain a
 
     public boolean englishOrDutch(String[] words){
 
-        switch (id){
-
-            case 1:
-                return isEnglishFunctionWord(words);
-            case 2:
-                return weirdConsonants(words);
-            default:
-                return false;
-
-        }
+        return switch (id) {
+            case 1 -> isEnglishFunctionWord(words);
+            case 2 -> weirdConsonants(words);
+            default -> false;
+        };
 
     }
 

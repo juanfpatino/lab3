@@ -1,4 +1,5 @@
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 
@@ -6,13 +7,36 @@ public class lab3 {
 
     public static void main(String[] args) throws IOException {
 
-        Scanner S = new Scanner(new File(args[0]));
+        String hFile;
 
-        String ss = S.nextLine();
+        if(args[0].equals("train")){ //train <examples> <hypothesisOut> <learning-type>
 
-        ArrayList<Example> hypothesisSpace = configureHS(S, ss);
+            hFile = args[2];
 
-        System.out.println(learn_decision_tree(hypothesisSpace, new ArrayList<>(Arrays.asList(1,2,3,5)), hypothesisSpace));
+            Scanner S = new Scanner(new File(args[1]));
+            String ss = S.nextLine();
+            FileWriter writer = new FileWriter(hFile);
+
+            if(args[3].equals("dt")){ //decision tree
+
+                ArrayList<Example> hypothesisSpace = configureHS(S, ss); //HYPOTHESIS SPACE //EXAMPLES
+                writer.write(learn_decision_tree(hypothesisSpace, new ArrayList<>(Arrays.asList(1,2,3,5)), hypothesisSpace).toString());
+
+            }
+            else{//"ada" //adaboost
+
+
+
+            }
+
+        }
+        else{//predict <hypothesis> <file>
+
+            hFile = args[1];
+            File file = new File(args[2]);
+
+        }
+
 
     }
 
