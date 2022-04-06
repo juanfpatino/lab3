@@ -10,14 +10,20 @@ public class lab3 {
 
         String ss = S.nextLine();
 
+        ArrayList<Example> hypothesisSpace = configureHS(S, ss);
+
+        System.out.println(learn_decision_tree(hypothesisSpace, new ArrayList<>(Arrays.asList(1,2,3,5)), hypothesisSpace));
+
+    }
+
+    private static ArrayList<Example> configureHS(Scanner S, String ss) {
         ArrayList<Example> hypothesisSpace = new ArrayList<>();
 
         while(true){
 
             String[] line = ss.split("\\\\s*[^a-zA-Z]+\\\\s*");
 
-            Example e = new Example(new ArrayList<>(Arrays.asList(line)), line[0].equals("en"));
-
+            Example e = createExampleFromLine(line);
             hypothesisSpace.add(e);
 
             try{
@@ -32,14 +38,24 @@ public class lab3 {
             }
 
         }
-
-
-        //todo: make arraylist of "attributes" (i.e. first one being the function words)
-        System.out.println(learn_decision_tree(hypothesisSpace, new ArrayList<>(Arrays.asList(0,1,2,3,4,5,6,7)) , hypothesisSpace));
-
+        return hypothesisSpace;
     }
 
-    private static int importance(ArrayList<String> attributes, ArrayList<Example> examples){//returns the index of the most important predicate
+    private static Example createExampleFromLine(String[] line) {
+        ArrayList<Boolean> preds = new ArrayList<>();
+
+        int attributeCount = 2; //how many features
+        for (int i = 0; i < attributeCount; i++) {
+
+            Attribute a = new Attribute(i);
+            preds.add(a.englishOrDutch(line));
+
+        }
+        return new Example(preds, line[0].equals("en"));
+    }
+
+
+    private static int importance(ArrayList<Integer> attributes, ArrayList<Example> examples){//returns the index of the most important predicate
 
         //return the attribute with the most information gain
 
@@ -48,6 +64,8 @@ public class lab3 {
         double[] d = new double[8];
 
         for (int i = 0; i < 8; i++) {
+
+
 
             if(!attributes.contains(i))continue;
 
@@ -70,6 +88,25 @@ public class lab3 {
                 }
 
             }
+
+            int errs = 0;
+
+            if(i == 3){//part 2
+
+                //hypothesis = if !3, B
+                for (Example e: examples
+                ) {
+
+                    if((e.predicates.get(i) && !e.englishOrDutch)){//if 3 and b
+
+                        errs++;
+
+                    }
+
+                }
+            }
+
+            double errorrate = (double)errs/(200);
 
             //Gain(A) = B(p/p+n) - Remainder(A)
 
@@ -217,7 +254,7 @@ public class lab3 {
         for (Example e: examples
         ) {
 
-            if(e.predicates[a]) temp.add(e);
+            if(e.predicates.get(a)) temp.add(e);
 
         }
 
@@ -232,7 +269,7 @@ public class lab3 {
         for (Example e: examples
         ) {
 
-            if(!e.predicates[a]) temp.add(e);
+            if(!e.predicates.get(a)) temp.add(e);
 
         }
 

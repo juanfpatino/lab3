@@ -3,10 +3,10 @@ import java.util.Arrays;
 
 public class Example {
 
-    public ArrayList<String> predicates; //always 15 long
+    public ArrayList<Boolean> predicates; //always 15 long
     public boolean englishOrDutch;
 
-    public Example(ArrayList<String> predicates, boolean englishOrDutch){
+    public Example(ArrayList<Boolean> predicates, boolean englishOrDutch){
 
         this.predicates = predicates;
         this.englishOrDutch = englishOrDutch;
