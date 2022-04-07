@@ -22,7 +22,9 @@ public class lab3 {
 
                 ArrayList<Example> hypothesisSpace = configureHS(S, ss); //HYPOTHESIS SPACE //EXAMPLES
 
-                String tree = learn_decision_tree(hypothesisSpace, new ArrayList<>(Arrays.asList(0,1,2)), hypothesisSpace).toString();
+                Tree t = learn_decision_tree(hypothesisSpace, new ArrayList<>(Arrays.asList(0,1,2,3)), hypothesisSpace);
+
+                String tree = t.toString();
 
                 writer.write(tree);
                 System.out.println(tree);
@@ -74,14 +76,18 @@ public class lab3 {
     private static Example createExampleFromLine(String[] line) {
         ArrayList<Boolean> preds = new ArrayList<>();
 
-        int attributeCount = 3; //how many features
+        boolean E = line[0].substring(0,2).equals("en");
+
+        line[0] = line[0].substring(2);
+
+        int attributeCount = 5; //how many features
         for (int i = 0; i < attributeCount; i++) {
 
             Attribute a = new Attribute(i);
             preds.add(a.englishOrDutch(line));
 
         }
-        return new Example(preds, line[0].contains("en"), line);
+        return new Example(preds, E, line);
     }
 
 

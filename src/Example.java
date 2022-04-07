@@ -22,8 +22,8 @@ public class Example {
         if(englishOrDutch)
             s = "English";
 
-        return Arrays.toString(originalLine) +
-                "......... " + s +
+        return "{" + s + "} {" + Arrays.toString(originalLine) +
+                "......... " +
                 '}' + " (" + predicates.toString() + ")";
     }
 }
