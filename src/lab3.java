@@ -1,3 +1,4 @@
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -15,12 +16,17 @@ public class lab3 {
 
             Scanner S = new Scanner(new File(args[1]));
             String ss = S.nextLine();
-            FileWriter writer = new FileWriter(hFile);
+            BufferedWriter writer = new BufferedWriter(new FileWriter(hFile));
 
             if(args[3].equals("dt")){ //decision tree
 
                 ArrayList<Example> hypothesisSpace = configureHS(S, ss); //HYPOTHESIS SPACE //EXAMPLES
-                writer.write(learn_decision_tree(hypothesisSpace, new ArrayList<>(Arrays.asList(1,2,3,5)), hypothesisSpace).toString());
+
+                String tree = learn_decision_tree(hypothesisSpace, new ArrayList<>(Arrays.asList(0,1,2)), hypothesisSpace).toString();
+
+                writer.write(tree);
+                System.out.println(tree);
+                writer.close();
 
             }
             else{//"ada" //adaboost
@@ -45,7 +51,7 @@ public class lab3 {
 
         while(true){
 
-            String[] line = ss.split("\\\\s*[^a-zA-Z]+\\\\s*");
+            String[] line = ss.replaceAll("[^a-zA-Z ]", "").toLowerCase().split("\\s+");
 
             Example e = createExampleFromLine(line);
             hypothesisSpace.add(e);
@@ -68,14 +74,14 @@ public class lab3 {
     private static Example createExampleFromLine(String[] line) {
         ArrayList<Boolean> preds = new ArrayList<>();
 
-        int attributeCount = 2; //how many features
+        int attributeCount = 3; //how many features
         for (int i = 0; i < attributeCount; i++) {
 
             Attribute a = new Attribute(i);
             preds.add(a.englishOrDutch(line));
 
         }
-        return new Example(preds, line[0].equals("en"));
+        return new Example(preds, line[0].contains("en"), line);
     }
 
 

@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="train dt" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="lab3" />
+    <module name="lab3" />
+    <option name="PROGRAM_PARAMETERS" value="train src/2000-train-updated.dat dt.txt dt" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

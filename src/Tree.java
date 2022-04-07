@@ -3,29 +3,29 @@ public class Tree {
     public int pred;
     Tree left = null;
     Tree right = null;
-    public Boolean AorB = null; //null if attribute, T/F if leaf node
+    public Boolean englishOrDutch = null; //null if attribute, T/F if leaf node
 
     public Tree(int pred, Tree left, Tree right, Boolean AorB){
 
         this.pred = pred;
         this.right = right;
         this.left = left;
-        this.AorB = AorB;
+        this.englishOrDutch = AorB;
 
     }
 
     @Override
     public String toString() {
-        if(AorB != null){
+        if(englishOrDutch != null){
 
-            if(AorB){
+            if(englishOrDutch){
 
-                return "(A)";
+                return "English";
 
             }
             else{
 
-                return "(B)";
+                return "Dutch";
 
             }
 

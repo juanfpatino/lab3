@@ -14,9 +14,9 @@ public class Attribute { //takes in a word, determines if it matches a certain a
     public boolean englishOrDutch(String[] words){
 
         return switch (id) {
-            case 1 -> isEnglishFunctionWord(words);
-            case 2 -> weirdConsonants(words);
-            case 3 -> isDutchFunctionWord(words);
+            case 0 -> isEnglishFunctionWord(words);
+            case 1 -> weirdConsonants(words);
+            case 2 -> isDutchFunctionWord(words);
             default -> false;
         };
 
