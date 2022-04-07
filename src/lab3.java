@@ -18,23 +18,22 @@ public class lab3 {
             String ss = S.nextLine();
             BufferedWriter writer = new BufferedWriter(new FileWriter(hFile));
 
-            Tree t = null;
+            ArrayList<Example> exampleSpace = configureES(S, ss); //HYPOTHESIS SPACE //EXAMPLES
+
+            Tree t;
+            Tree l = learn_decision_tree(exampleSpace, new ArrayList<>(Arrays.asList(0,1,2,3,4,5)), exampleSpace);
+
 
             if(args[3].equals("dt")){ //decision tree
 
-                ArrayList<Example> hypothesisSpace = configureHS(S, ss); //HYPOTHESIS SPACE //EXAMPLES
-
-                t = learn_decision_tree(hypothesisSpace, new ArrayList<>(Arrays.asList(0,1,2,3,4,5)), hypothesisSpace);
-
-
+                t = l;
 
             }
             else{//"ada" //adaboost
 
-
+                t = adaBoost(exampleSpace, l, 6); //6 hypothesis
 
             }
-
 
             assert t != null;
             String tree = t.toString();
@@ -48,13 +47,46 @@ public class lab3 {
 
             hFile = args[1];
             File file = new File(args[2]);
-
+            long n = file.length(); //how any lines i think
+            //todo function that parses tree file into tree object
+            //read tree file
+            //spit out new file
+            BufferedWriter writer = new BufferedWriter(new FileWriter(hFile));
+            writer.write("todo");
+            writer.close();
         }
 
 
     }
 
-    private static ArrayList<Example> configureHS(Scanner S, String ss) {
+    private static Tree adaBoost(ArrayList<Example> examples, Tree dt, int k){
+
+        Tree t = dt;
+
+        for (int i = 0; i < k; i++) {
+
+            //todo convert tree into some hypothesis space format
+
+            int n = examples.size();
+
+            for (int j = 1; j < n; j++) {
+
+            }
+            for (int j = 1; j < n; j++) {
+
+            }
+
+            //normalize
+            //other stuff
+
+        }
+
+        return t;
+
+    }
+
+
+    private static ArrayList<Example> configureES(Scanner S, String ss) {
         ArrayList<Example> hypothesisSpace = new ArrayList<>();
 
         while(true){
