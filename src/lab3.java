@@ -259,16 +259,18 @@ public class lab3 {
         else{
 
             Integer A = importance(attributes, examples);
-
             attributes.remove(A);
+
+            ArrayList<Integer> attributesRight = new ArrayList<>(attributes);
+            ArrayList<Integer> attributesLeft = new ArrayList<>(attributes);    //recursion is weird
 
             //left (true) //examples are now how many are true with this attribute
 
-            Tree left = learn_decision_tree(whichAreTrue(A, examples), attributes, examples);
+            Tree left = learn_decision_tree(whichAreTrue(A, examples), attributesRight, examples);
 
             //right (false) //examples are now how many are false with this attribute
 
-            Tree right = learn_decision_tree(whichAreFalse(A, examples), attributes, examples);
+            Tree right = learn_decision_tree(whichAreFalse(A, examples), attributesLeft, examples);
 
             return new Tree(A, left, right, null);
 
