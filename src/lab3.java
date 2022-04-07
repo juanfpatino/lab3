@@ -18,17 +18,15 @@ public class lab3 {
             String ss = S.nextLine();
             BufferedWriter writer = new BufferedWriter(new FileWriter(hFile));
 
+            Tree t = null;
+
             if(args[3].equals("dt")){ //decision tree
 
                 ArrayList<Example> hypothesisSpace = configureHS(S, ss); //HYPOTHESIS SPACE //EXAMPLES
 
-                Tree t = learn_decision_tree(hypothesisSpace, new ArrayList<>(Arrays.asList(0,1,2,3)), hypothesisSpace);
+                t = learn_decision_tree(hypothesisSpace, new ArrayList<>(Arrays.asList(0,1,2,3,4,5)), hypothesisSpace);
 
-                String tree = t.toString();
 
-                writer.write(tree);
-                System.out.println(tree);
-                writer.close();
 
             }
             else{//"ada" //adaboost
@@ -36,6 +34,14 @@ public class lab3 {
 
 
             }
+
+
+            assert t != null;
+            String tree = t.toString();
+
+            writer.write(tree);
+            System.out.println(tree);
+            writer.close();
 
         }
         else{//predict <hypothesis> <file>
@@ -80,7 +86,7 @@ public class lab3 {
 
         line[0] = line[0].substring(2);
 
-        int attributeCount = 5; //how many features
+        int attributeCount = 6; //how many features
         for (int i = 0; i < attributeCount; i++) {
 
             Attribute a = new Attribute(i);
@@ -97,11 +103,9 @@ public class lab3 {
 
         if(attributes.size()== 1) return attributes.get(0);
 
-        double[] d = new double[8];
+        double[] d = new double[6];
 
-        for (int i = 0; i < 8; i++) {
-
-
+        for (int i = 0; i < 6; i++) {
 
             if(!attributes.contains(i))continue;
 

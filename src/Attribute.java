@@ -19,6 +19,7 @@ public class Attribute { //takes in a word, determines if it matches a certain a
             case 2 -> isDutchFunctionWord(words);
             case 3 -> containsEnglishSuffixes(words);
             case 4 -> containsDutchSuffixes(words);
+            case 5 -> containsDutchPrefixes(words);
             default -> false;
         };
 
@@ -153,6 +154,45 @@ public class Attribute { //takes in a word, determines if it matches a certain a
         return true;//english
 
     }
+
+
+    //sixth attribute. contains dutch suffixes
+    private boolean containsDutchPrefixes(String[] words){
+
+        String[] fWords = new String[]{"aan", "aarts", "achter", "betoergroot", "bloed",
+                "boven", "buiten", "carcino", "cyano", "elektro", "filo", "fono", "fysio",
+                "groot", "hoofd", "huis-tuin-en-keuken-", "kanker", "kinesi", "klote", "kunst", "kut", "kwase",
+                "mannetjes", "mede", "middel", "midden", "niet", "noorder",
+                "onder", "oor", "opeen", "opper", "oud", "overgroot", "stief", "terug", "tering", "tussen", "lijn",
+                "voor", "voort", "vooruit", "vrouwtjes", "weder", "weer", "yocto",
+                "yotta", "zelf", "zepto", "zetta", "zuider"};
+
+        for (String s: words
+        ) {
+
+            for (String w: fWords
+            ) {
+
+                int fWordLength = w.length();
+                int sLength = s.length();
+
+                if(fWordLength > sLength) continue;
+
+                String start = s.substring(0,fWordLength);
+                if(start.equals(w)) {
+
+                    return false; //dutch
+
+                }
+
+            }
+
+        }
+
+        return true;//english
+
+    }
+
 
 
 }
