@@ -77,14 +77,28 @@ public class lab3 {
 
             int startIdx = 2;
 
-            if(sp[2].contains("E") || sp[2].contains("D")){
-
-                startIdx = 2;
-
-            }
-
 
             System.arraycopy(sp, startIdx, right, 0, sp.length-startIdx);
+
+            int rightLength = right.length;
+
+            if(right[0].equals("Dutch")){
+
+                String[] newRight = new String[]{"Dutch"};
+                String[] left = new String[rightLength-startIdx];
+                System.arraycopy(right, startIdx, left, 0, rightLength-startIdx);
+                return new Tree(Integer.parseInt(firstS.substring(2,3)), parseTree(left), parseTree(newRight), null);
+
+            }
+            else if(right[0].equals("English")){
+
+                String[] newRight = new String[]{"English"};
+                String[] left = new String[rightLength-startIdx];
+                System.arraycopy(right, startIdx, left, 0, rightLength-startIdx);
+                return new Tree(Integer.parseInt(firstS.substring(2,3)), parseTree(left), parseTree(newRight), null);
+
+
+            }
 
             int leftBrackets = 0;
             int rightBrackets = 0;
