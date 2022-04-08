@@ -8,13 +8,13 @@ public class lab3 {
 
     public static void main(String[] args) throws IOException {
 
+        Scanner S = new Scanner(new File(args[1]));
         String hFile;
 
         if(args[0].equals("train")){ //train <examples> <hypothesisOut> <learning-type>
 
             hFile = args[2];
 
-            Scanner S = new Scanner(new File(args[1]));
             String ss = S.nextLine();
             BufferedWriter writer = new BufferedWriter(new FileWriter(hFile));
 
@@ -46,16 +46,97 @@ public class lab3 {
         else{//predict <hypothesis> <file>
 
             hFile = args[1];
-            File file = new File(args[2]);
-            long n = file.length(); //how any lines i think
-            //todo function that parses tree file into tree object
+
+            String tString = S.nextLine();
+
+            Tree t = parseTree(tString.split(" "));
+
+            if(t.toString().equals(tString)) System.out.println("PARSE WORKS");
+
             //read tree file
             //spit out new file
-            BufferedWriter writer = new BufferedWriter(new FileWriter(hFile));
-            writer.write("todo");
-            writer.close();
+
         }
 
+
+    }
+
+    private static Tree parseTree(String[] sp){
+
+
+        String firstS = sp[0];
+
+        if(firstS.contains("English") || firstS.contains("Dutch")){
+
+            return new Tree(-1,null,null,firstS.contains("English"));
+
+        }
+        else{//number
+
+            String[] right = new String[sp.length-1];
+
+            int startIdx = 2;
+
+            if(sp[2].contains("E") || sp[2].contains("D")){
+
+                startIdx = 2;
+
+            }
+
+
+            System.arraycopy(sp, startIdx, right, 0, sp.length-startIdx);
+
+            int leftBrackets = 0;
+            int rightBrackets = 0;
+            //when these two equal each other, good to cut string
+
+            String[] left = new String[69];
+            boolean leftDone = false;
+
+            for (int i = 1; i < sp.length; i++) {
+
+                if(leftDone)break;
+
+                String ss = sp[i];
+
+                if(ss.contains("["))leftBrackets++;
+                if(ss.contains("]")){
+
+                    for (char c: ss.toCharArray()
+                         ) {
+
+                        if(c == ']'){
+
+                            rightBrackets++;
+
+                            if(rightBrackets  == leftBrackets){
+
+                                left = new String[sp.length - i];
+                                for (int j = 0; j < left.length - 2; j++) {
+
+                                    left[j] = sp[i + 2 +j];
+
+                                }
+
+
+                                leftDone = true;
+                                break;
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+
+
+            }
+
+            return new Tree(Integer.parseInt(firstS.substring(2,3)), parseTree(left), parseTree(right), null);
+
+        }
 
     }
 
