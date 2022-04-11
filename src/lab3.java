@@ -101,7 +101,7 @@ public class lab3 {
         else{//"ada" //adaboost
 
             ada = true;
-            t = adaBoost(exampleSpace, 200); //TODO: DOCUMENT
+            t = adaBoost(exampleSpace, 2000); //TODO: DOCUMENT
 
         }
 
@@ -232,16 +232,17 @@ public class lab3 {
 
     private static Tree adaBoost(ArrayList<Example> examples, int K){
 
+        ArrayList<Example> localExamples = examples;
 
-        int n = examples.size();
+        int n = localExamples.size();
 
-        double[] w = new double[K]; //example weight vector
+        double[] w = new double[n]; //example weight vector
         Tree[] h = new Tree[K]; //hypothesis vector
         double[] z  = new double[K]; //hypothesis weights
 
         int count = 0;
 
-        for (Example e: examples //initially give examples 1/n weights
+        for (Example e: localExamples //initially give examples 1/n weights
              ) {
 
             w[count] = 1 / (double)n;
@@ -253,13 +254,13 @@ public class lab3 {
 
         for (int k = 0; k < K; k++) {
 
-            Tree hj = learn_decision_tree(examples, new ArrayList<>(Arrays.asList(0,1,2,3,4,5)), examples);
+            Tree hj = learn_decision_tree(localExamples, new ArrayList<>(Arrays.asList(0,1,2,3,4,5)), localExamples);
 
             double error = 0.0;
 
             for (int j = 1; j < n; j++) {
 
-                Example x = examples.get(j);
+                Example x = localExamples.get(j);
 
                 if(!exampleMatchesHypothesis(x,hj)){
 
@@ -272,7 +273,7 @@ public class lab3 {
 
             for (int j = 1; j < n; j++) {
 
-                Example x = examples.get(j);
+                Example x = localExamples.get(j);
 
                 if(exampleMatchesHypothesis(x,hj)){
 
@@ -293,7 +294,7 @@ public class lab3 {
                 double d = w[i];
                 w[i] = d / sum;
 
-                examples.get(i).adaBoostWeight = w[i];
+                localExamples.get(i).adaBoostWeight = w[i];
 
             }
 
@@ -401,10 +402,13 @@ public class lab3 {
 
                 if(ada){
 
-                    double threshold =  (double)1/examples.size() * 1.5; //at least this weight to matter
+                    double threshold =  (double)1/examples.size(); //at least this weight to matter
                                                                 //at least 1/n
+                    if(e.adaBoostWeight < threshold){
 
-                    if(e.adaBoostWeight < threshold) continue; //ignore this example if its weight is too small
+                        continue;//ignore this example if its weight is too small
+
+                    }
 
                 }
 
@@ -421,9 +425,6 @@ public class lab3 {
 
             }
 
-            int errs = 0;
-
-            double errorrate = (double)errs/(200);
 
             //Gain(A) = B(p/p+n) - Remainder(A)
 
