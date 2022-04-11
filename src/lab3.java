@@ -245,7 +245,7 @@ public class lab3 {
              ) {
 
             w[count] = 1 / (double)n;
-            //e.adaBoostWeight = w[count]; //for decision tree
+            e.adaBoostWeight = w[count]; //for decision tree
             count++;
 
         }
@@ -291,8 +291,9 @@ public class lab3 {
             for (int i = 0; i < n; i++) {
 
                 double d = w[i];
-
                 w[i] = d / sum;
+
+                examples.get(i).adaBoostWeight = w[i];
 
             }
 
@@ -397,6 +398,15 @@ public class lab3 {
 
             for (Example e: examples
             ) {
+
+                if(ada){
+
+                    double threshold =  (double)1/examples.size() * 1.5; //at least this weight to matter
+                                                                //at least 1/n
+
+                    if(e.adaBoostWeight < threshold) continue; //ignore this example if its weight is too small
+
+                }
 
                 if(e.predicates.get(i)){
 
@@ -536,6 +546,9 @@ public class lab3 {
         else{
 
             Integer A = importance(attributes, examples);
+
+            if(ada) return new Tree(A, new Tree(-1, null, null, true), new Tree(-1, null, null, false), null);
+
             attributes.remove(A);
 
             ArrayList<Integer> attributesRight = new ArrayList<>(attributes);
