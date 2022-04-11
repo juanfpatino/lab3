@@ -11,7 +11,7 @@ public class Attribute { //takes in a word, determines if it matches a certain a
 
     }
 
-    public boolean englishOrDutch(String[] words){
+    public boolean englishOrDutch(String[] words){ //TODO: DOCUMENT
 
         return switch (id) {
             case 0 -> isEnglishFunctionWord(words);

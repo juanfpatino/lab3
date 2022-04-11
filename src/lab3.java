@@ -1,77 +1,128 @@
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 public class lab3 {
 
+    public static boolean ada = false;
+
     public static void main(String[] args) throws IOException {
 
         Scanner S = new Scanner(new File(args[1]));
-        String hFile;
 
         if(args[0].equals("train")){ //train <examples> <hypothesisOut> <learning-type>
 
-            hFile = args[2];
-
-            String ss = S.nextLine();
-            BufferedWriter writer = new BufferedWriter(new FileWriter(hFile));
-
-            ArrayList<Example> exampleSpace = configureES(S, ss); //HYPOTHESIS SPACE //EXAMPLES
-
-            Tree t;
-            Tree l = learn_decision_tree(exampleSpace, new ArrayList<>(Arrays.asList(0,1,2,3,4,5)), exampleSpace);
-
-
-            if(args[3].equals("dt")){ //decision tree
-
-                t = l;
-
-            }
-            else{//"ada" //adaboost
-
-                t = adaBoost(exampleSpace, l, 6); //6 hypothesis
-
-            }
-
-            assert t != null;
-            String tree = t.toString();
-
-            writer.write(tree);
-            System.out.println(tree);
-            writer.close();
+            train(args, S);
 
         }
         else{//predict <hypothesis> <file>
 
-            hFile = args[1];
-
-            String tString = S.nextLine();
-
-            Tree t = parseTree(tString.split(" "));
-
-            if(t.toString().equals(tString)) System.out.println("PARSE WORKS");
-
-            //read tree file
-            //spit out new file
+            predict(args, S);
 
         }
 
 
     }
 
-    private static Tree parseTree(String[] sp){
+    private static void predict(String[] args, Scanner S) throws FileNotFoundException {
+        String tString = S.nextLine();
 
+        Tree t = parseTree(tString.split(" "));
+        Tree tCopy = t;
+
+        S = new Scanner(new File(args[2]));
+
+        String ss = S.nextLine();
+        while(true){
+
+            String[] line = ss.replaceAll("[^a-zA-Z ]", "").toLowerCase().split("\\s+");
+
+            while(t.pred != -1){
+
+                Attribute a = new Attribute(t.pred);
+
+                if(a.englishOrDutch(line)){
+
+                    t = t.left;
+
+                }
+                else{
+
+                    t = t.right;
+
+                }
+
+            }
+
+            if(t.englishOrDutch){
+
+                System.out.println("en");
+
+            }
+            else{
+
+                System.out.println("nl");
+
+            }
+
+            t = tCopy;
+
+            try{
+
+                ss = S.nextLine();
+
+            }
+            catch (NoSuchElementException n){
+
+                break;
+
+            }
+
+        }
+    }
+
+    private static void train(String[] args, Scanner S) throws IOException {
+        String hFile;
+        hFile = args[2];
+
+        String ss = S.nextLine();
+        BufferedWriter writer = new BufferedWriter(new FileWriter(hFile));
+
+        ArrayList<Example> exampleSpace = configureES(S, ss); //HYPOTHESIS SPACE //EXAMPLES
+
+        Tree t;
+        Tree l = learn_decision_tree(exampleSpace, new ArrayList<>(Arrays.asList(0,1,2,3,4,5)), exampleSpace);
+
+
+        if(args[3].equals("dt")){ //decision tree
+
+            t = l;
+
+        }
+        else{//"ada" //adaboost
+
+            ada = true;
+            t = adaBoost(exampleSpace, 200); //TODO: DOCUMENT
+
+        }
+
+        assert t != null;
+        String tree = t.toString();
+
+        writer.write(tree);
+        System.out.println(tree);
+        writer.close();
+    }
+
+    private static Tree parseTree(String[] sp){
 
         String firstS = sp[0];
 
-        if(firstS.contains("English") || firstS.contains("Dutch")){
+        if(firstS.contains("English") || firstS.contains("Dutch")){//leaf
 
             return new Tree(-1,null,null,firstS.contains("English"));
 
         }
-        else{//number
+        else{//number or leaf
 
             String[] right = new String[sp.length-1];
 
@@ -96,7 +147,6 @@ public class lab3 {
                 String[] left = new String[rightLength-startIdx];
                 System.arraycopy(right, startIdx, left, 0, rightLength-startIdx);
                 return new Tree(Integer.parseInt(firstS.substring(2,3)), parseTree(left), parseTree(newRight), null);
-
 
             }
 
@@ -154,29 +204,134 @@ public class lab3 {
 
     }
 
-    private static Tree adaBoost(ArrayList<Example> examples, Tree dt, int k){
+    private static boolean exampleMatchesHypothesis(Example e, Tree t){
 
-        Tree t = dt;
 
-        for (int i = 0; i < k; i++) {
+        while(t.pred != -1){
 
-            //todo convert tree into some hypothesis space format
+            Attribute a = new Attribute(t.pred);
 
-            int n = examples.size();
+            if(a.englishOrDutch(e.originalLine)){
 
-            for (int j = 1; j < n; j++) {
-
-            }
-            for (int j = 1; j < n; j++) {
+                t = t.left;
 
             }
+            else{
 
-            //normalize
-            //other stuff
+                t = t.right;
+
+            }
 
         }
 
-        return t;
+
+        return t.englishOrDutch == e.englishOrDutch;
+
+
+    }
+
+    private static Tree adaBoost(ArrayList<Example> examples, int K){
+
+
+        int n = examples.size();
+
+        double[] w = new double[K]; //example weight vector
+        Tree[] h = new Tree[K]; //hypothesis vector
+        double[] z  = new double[K]; //hypothesis weights
+
+        int count = 0;
+
+        for (Example e: examples //initially give examples 1/n weights
+             ) {
+
+            w[count] = 1 / (double)n;
+            //e.adaBoostWeight = w[count]; //for decision tree
+            count++;
+
+        }
+
+
+        for (int k = 0; k < K; k++) {
+
+            Tree hj = learn_decision_tree(examples, new ArrayList<>(Arrays.asList(0,1,2,3,4,5)), examples);
+
+            double error = 0.0;
+
+            for (int j = 1; j < n; j++) {
+
+                Example x = examples.get(j);
+
+                if(!exampleMatchesHypothesis(x,hj)){
+
+                    error = error + w[j];
+
+                }
+
+
+            }
+
+            for (int j = 1; j < n; j++) {
+
+                Example x = examples.get(j);
+
+                if(exampleMatchesHypothesis(x,hj)){
+
+                    error = w[j] * error / (1-error);
+
+                }
+
+            }
+
+            h[k] = hj;
+
+            //normalize
+
+            double sum = sum(w);
+
+            for (int i = 0; i < n; i++) {
+
+                double d = w[i];
+
+                w[i] = d / sum;
+
+            }
+
+            //update z
+
+            z[k] = Math.log((1 - error)/error);
+
+        }
+
+        double largest = 0.0;
+        int largestIdx = 0;
+
+        for (int i = 0; i < K; i++) {
+
+            if(z[i] > largest){
+
+                largest = z[i];
+                largestIdx = i;
+
+            }
+
+        }
+
+        return h[largestIdx];
+
+    }
+
+    private static double sum(double[] w) {
+
+        double s = 0.0;
+
+        for (double d: w
+             ) {
+
+            s += d;
+
+        }
+
+        return s;
 
     }
 
@@ -257,21 +412,6 @@ public class lab3 {
             }
 
             int errs = 0;
-
-            if(i == 3){//part 2
-
-                //hypothesis = if !3, B
-                for (Example e: examples
-                ) {
-
-                    if((e.predicates.get(i) && !e.englishOrDutch)){//if 3 and b
-
-                        errs++;
-
-                    }
-
-                }
-            }
 
             double errorrate = (double)errs/(200);
 

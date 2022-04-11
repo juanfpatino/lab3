@@ -6,6 +6,7 @@ public class Example {
     public ArrayList<Boolean> predicates; //always 15 long
     public boolean englishOrDutch;
     public String[] originalLine;
+    public double adaBoostWeight = 0.0;
 
     public Example(ArrayList<Boolean> predicates, boolean englishOrDutch, String[] originalLine){
 
