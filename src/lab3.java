@@ -5,7 +5,7 @@ public class lab3 {
 
     public static boolean ada = false;
 
-    public static Integer[] features = new Integer[]{0, 1, 2, 3};
+    public static Integer[] features = new Integer[]{0, 1, 2, 3, 4};
 
     public static void main(String[] args) throws IOException {
 
@@ -258,6 +258,8 @@ public class lab3 {
 
             double error = 0.0;
 
+            int howManyWrong = 0;
+
             for (int j = 1; j < n; j++) {
 
                 Example x = localExamples.get(j);
@@ -265,6 +267,7 @@ public class lab3 {
                 if(!exampleMatchesHypothesis(x,hj)){
 
                     error = error + w[j];
+                    howManyWrong++;
 
                 }
 
@@ -282,7 +285,7 @@ public class lab3 {
                 }
                 else{
 
-                    System.out.println("err");
+                   // System.out.println("err");
 
                 }
 
@@ -401,13 +404,15 @@ public class lab3 {
             //confusing. but for this attribute how many examples conclude with the A class or B
             ArrayList<Boolean> TRUE = new ArrayList<>(); //true = A, false = B
             ArrayList<Boolean> FALSE = new ArrayList<>(); //true = A, false = B
+            int howManyWeSkipping = 0;
 
             for (Example e: examples
             ) {
 
+
                 if(ada){
 
-                    double threshold =  (double)1/examples.size(); //at least this weight to matter
+                    double threshold =  (double)1/examples.size() * .8; //at least this weight to matter
                                                                 //at least 1/n * 2
 
                     double error = threshold/100; //allow room for double
@@ -415,6 +420,7 @@ public class lab3 {
 
                     if(e.adaBoostWeight < threshold - error){
 
+                        howManyWeSkipping++;
                         continue;//ignore this example if its weight is too small
 
                     }

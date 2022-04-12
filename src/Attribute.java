@@ -16,10 +16,11 @@ public class Attribute { //takes in a word, determines if it matches a certain a
         return switch (id) {
             //case 0 -> isEnglishFunctionWord(words); //too good
             case 0 -> weirdConsonants(words);
-            //case 1 -> isDutchFunctionWord(words); //too good
             case 1 -> containsEnglishSuffixes(words);
             case 2 -> containsDutchSuffixes(words);
             case 3 -> containsDutchPrefixes(words);
+            case 4 -> isDutchFunctionWord(words); //too good
+
             default -> false;
         };
 
