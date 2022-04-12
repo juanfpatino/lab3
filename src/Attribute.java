@@ -14,12 +14,12 @@ public class Attribute { //takes in a word, determines if it matches a certain a
     public boolean englishOrDutch(String[] words){ //TODO: DOCUMENT
 
         return switch (id) {
-            case 0 -> isEnglishFunctionWord(words);
-            case 1 -> weirdConsonants(words);
-            case 2 -> isDutchFunctionWord(words);
-            case 3 -> containsEnglishSuffixes(words);
-            case 4 -> containsDutchSuffixes(words);
-            case 5 -> containsDutchPrefixes(words);
+            //case 0 -> isEnglishFunctionWord(words); //too good
+            case 0 -> weirdConsonants(words);
+            //case 1 -> isDutchFunctionWord(words); //too good
+            case 1 -> containsEnglishSuffixes(words);
+            case 2 -> containsDutchSuffixes(words);
+            case 3 -> containsDutchPrefixes(words);
             default -> false;
         };
 

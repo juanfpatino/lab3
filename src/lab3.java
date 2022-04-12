@@ -5,6 +5,8 @@ public class lab3 {
 
     public static boolean ada = false;
 
+    public static Integer[] features = new Integer[]{0, 1, 2, 3};
+
     public static void main(String[] args) throws IOException {
 
         Scanner S = new Scanner(new File(args[1]));
@@ -90,12 +92,10 @@ public class lab3 {
         ArrayList<Example> exampleSpace = configureES(S, ss); //HYPOTHESIS SPACE //EXAMPLES
 
         Tree t;
-        Tree l = learn_decision_tree(exampleSpace, new ArrayList<>(Arrays.asList(0,1,2,3,4,5)), exampleSpace);
-
 
         if(args[3].equals("dt")){ //decision tree
 
-            t = l;
+            t = learn_decision_tree(exampleSpace, new ArrayList<>(Arrays.asList(features)), exampleSpace);
 
         }
         else{//"ada" //adaboost
@@ -254,7 +254,7 @@ public class lab3 {
 
         for (int k = 0; k < K; k++) {
 
-            Tree hj = learn_decision_tree(localExamples, new ArrayList<>(Arrays.asList(0,1,2,3,4,5)), localExamples);
+            Tree hj = learn_decision_tree(localExamples, new ArrayList<>(Arrays.asList(features)), localExamples);
 
             double error = 0.0;
 
@@ -278,6 +278,11 @@ public class lab3 {
                 if(exampleMatchesHypothesis(x,hj)){
 
                     w[j] = w[j] * error / (1-error);
+
+                }
+                else{
+
+                    System.out.println("err");
 
                 }
 
@@ -387,9 +392,9 @@ public class lab3 {
 
         if(attributes.size()== 1) return attributes.get(0);
 
-        double[] d = new double[6];
+        double[] d = new double[features.length];
 
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < features.length; i++) {
 
             if(!attributes.contains(i))continue;
 
@@ -405,10 +410,10 @@ public class lab3 {
                     double threshold =  (double)1/examples.size(); //at least this weight to matter
                                                                 //at least 1/n * 2
 
-                    double error = threshold/10; //allow room for double
+                    double error = threshold/100; //allow room for double
 
 
-                    if(e.adaBoostWeight < threshold - error*2){
+                    if(e.adaBoostWeight < threshold - error){
 
                         continue;//ignore this example if its weight is too small
 
@@ -485,7 +490,7 @@ public class lab3 {
         }
 
         double most = 0;
-        int i = 0;
+        int i = features[0];
         int mostIdx = 0;
 
         for (double D: d
