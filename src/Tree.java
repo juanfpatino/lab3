@@ -1,9 +1,12 @@
-public class Tree {
+import java.util.Objects;
+
+public class Tree{
 
     public int pred;
     Tree left = null;
     Tree right = null;
     public Boolean englishOrDutch = null; //null if attribute, T/F if leaf node
+    public double weight = 0.0; //adaboost
 
     public Tree(int pred, Tree left, Tree right, Boolean AorB){
 
@@ -57,5 +60,18 @@ public class Tree {
             return "[(" + pred + ") right: " + right + " left: " + left + "]"; //this isnt it
 
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Tree tree = (Tree) o;
+        return pred == tree.pred && Double.compare(tree.weight, weight) == 0 && Objects.equals(left, tree.left) && Objects.equals(right, tree.right) && Objects.equals(englishOrDutch, tree.englishOrDutch);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pred, left, right, englishOrDutch);
     }
 }

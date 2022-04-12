@@ -19,7 +19,7 @@ public class Attribute { //takes in a word, determines if it matches a certain a
             case 1 -> containsEnglishSuffixes(words);
             case 2 -> containsDutchSuffixes(words);
             case 3 -> containsDutchPrefixes(words);
-            case 4 -> isDutchFunctionWord(words); //too good
+            case 4 -> isDutchFunctionWord(words); //maybe too good
 
             default -> false;
         };

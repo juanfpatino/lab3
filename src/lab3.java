@@ -101,7 +101,8 @@ public class lab3 {
         else{//"ada" //adaboost
 
             ada = true;
-            t = adaBoost(exampleSpace, 500); //TODO: DOCUMENT
+            int K = 500;
+            t = adaBoost(exampleSpace, K); //TODO: DOCUMENT
 
         }
 
@@ -232,17 +233,14 @@ public class lab3 {
 
     private static Tree adaBoost(ArrayList<Example> examples, int K){
 
-        ArrayList<Example> localExamples = examples;
-
-        int n = localExamples.size();
+        int n = examples.size();
 
         double[] w = new double[n]; //example weight vector
-        Tree[] h = new Tree[K]; //hypothesis vector
-        double[] z  = new double[K]; //hypothesis weights
+        Queue<Tree> h = new PriorityQueue<>(5, new StumpComparator());
 
         int count = 0;
 
-        for (Example e: localExamples //initially give examples 1/n weights
+        for (Example e: examples //initially give examples 1/n weights
              ) {
 
             w[count] = 1 / (double)n;
@@ -254,7 +252,7 @@ public class lab3 {
 
         for (int k = 0; k < K; k++) {
 
-            Tree hj = learn_decision_tree(localExamples, new ArrayList<>(Arrays.asList(features)), localExamples);
+            Tree hj = learn_decision_tree(examples, new ArrayList<>(Arrays.asList(features)), examples);
 
             double error = 0.0;
 
@@ -262,7 +260,7 @@ public class lab3 {
 
             for (int j = 1; j < n; j++) {
 
-                Example x = localExamples.get(j);
+                Example x = examples.get(j);
 
                 if(!exampleMatchesHypothesis(x,hj)){
 
@@ -276,22 +274,21 @@ public class lab3 {
 
             for (int j = 1; j < n; j++) {
 
-                Example x = localExamples.get(j);
+                Example x = examples.get(j);
 
                 if(exampleMatchesHypothesis(x,hj)){
 
                     w[j] = w[j] * error / (1-error);
 
                 }
-                else{
+               // else{
 
                    // System.out.println("err");
 
-                }
+                //}
 
             }
 
-            h[k] = hj;
 
             //normalize
 
@@ -302,31 +299,57 @@ public class lab3 {
                 double d = w[i];
                 w[i] = d / sum;
 
-                localExamples.get(i).adaBoostWeight = w[i];
+                examples.get(i).adaBoostWeight = w[i];
 
             }
 
             //update z
 
-            z[k] = Math.log((1 - error)/error);
+            hj.weight = Math.log((1 - error)/error);
+            h.add(hj);
 
         }
 
-        double largest = 0.0;
-        int largestIdx = 0;
 
-        for (int i = 0; i < K; i++) {
+        //make a tree based off the ensemble
 
-            if(z[i] > largest){
 
-                largest = z[i];
-                largestIdx = i;
+        return vectorToTree(h);
+
+    }
+
+    private static Tree vectorToTree(Queue<Tree> h) {
+
+        Queue<Tree> H = new PriorityQueue<>(5, new StumpComparator()); //set of hypothesis in order of weight
+        int p = Objects.requireNonNull(h.poll()).pred;
+
+        int last = -1;
+
+        for (Tree t: h
+             ) {
+
+            if(t.pred != last){
+
+                if(H.contains(t)) continue;
+
+                H.add(t);
+                last = t.pred;
 
             }
 
         }
 
-        return h[largestIdx];
+        if(H.size() == 0){
+
+            return new Tree(p, new Tree(-1,null, null, true), new Tree(-1, null, null, false), null);
+
+        }
+        else{
+
+
+            return new Tree(p, vectorToTree(H), new Tree(-1,null, null, false), null);
+
+        }
 
     }
 
