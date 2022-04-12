@@ -101,7 +101,7 @@ public class lab3 {
         else{//"ada" //adaboost
 
             ada = true;
-            t = adaBoost(exampleSpace, 2000); //TODO: DOCUMENT
+            t = adaBoost(exampleSpace, 500); //TODO: DOCUMENT
 
         }
 
@@ -277,7 +277,7 @@ public class lab3 {
 
                 if(exampleMatchesHypothesis(x,hj)){
 
-                    error = w[j] * error / (1-error);
+                    w[j] = w[j] * error / (1-error);
 
                 }
 
@@ -403,8 +403,12 @@ public class lab3 {
                 if(ada){
 
                     double threshold =  (double)1/examples.size(); //at least this weight to matter
-                                                                //at least 1/n
-                    if(e.adaBoostWeight < threshold){
+                                                                //at least 1/n * 2
+
+                    double error = threshold/10; //allow room for double
+
+
+                    if(e.adaBoostWeight < threshold - error*2){
 
                         continue;//ignore this example if its weight is too small
 
@@ -529,7 +533,7 @@ public class lab3 {
     //learn
     private static Tree learn_decision_tree(ArrayList<Example> examples, ArrayList<Integer> attributes, ArrayList<Example> parent_examples){
 
-        if(examples.size() == 0){
+        if(examples.size() == 0 && !ada){
 
             return plurality_value(parent_examples);
 
