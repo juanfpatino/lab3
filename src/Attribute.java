@@ -1,6 +1,7 @@
 import java.util.Arrays;
 
-public class Attribute { //takes in a word, determines if it matches a certain attribute
+//takes in an example, determines if it contains a certain attribute
+public class Attribute {
 
     public int id;
     //1 = function word
@@ -11,15 +12,16 @@ public class Attribute { //takes in a word, determines if it matches a certain a
 
     }
 
-    public boolean englishOrDutch(String[] words){ //TODO: DOCUMENT
+    //features!!
+    public boolean englishOrDutch(String[] words){
 
         return switch (id) {
-            //case 0 -> isEnglishFunctionWord(words); //too good
             case 0 -> weirdConsonants(words);
             case 1 -> containsEnglishSuffixes(words);
             case 2 -> containsDutchSuffixes(words);
             case 3 -> containsDutchPrefixes(words);
             case 4 -> isDutchFunctionWord(words); //maybe too good
+            case 5 -> isEnglishFunctionWord(words); //too good
 
             default -> false;
         };
@@ -70,9 +72,13 @@ public class Attribute { //takes in a word, determines if it matches a certain a
     //third attribute. function word?
     private boolean isDutchFunctionWord(String[] words){
 
-        String[] fWords = new String[]{"de", "een", "het", "hij", "hem", "zij", "haar",
-                "zijn", "de hare", "onder", "richting", "voordat", "van", "voor", "en", "maar", "als", "dan", "goed",
-                "echter", "dus", "zou", "zou kunnen", "zou moeten", "omhoog", "aan", "omlaag", "ja", "nee", "oke"};
+        String[] fWords = new String[]{
+                "de",
+                 "een", "het", "hij", "hem", "zij", "haar",
+                "zijn", "de hare", "onder", "richting", "voordat",
+                "van", "voor", "en", "maar", "als", "dan", "goed",
+                "echter", "dus", "zou", "zou kunnen", "zou moeten", "omhoog", "aan", "omlaag", "ja", "nee", "oke"
+        };
 
         for (String s: fWords
         ) {

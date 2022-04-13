@@ -5,7 +5,9 @@ public class lab3 {
 
     public static boolean ada = false;
 
-    public static Integer[] features = new Integer[]{0, 1, 2, 3, 4};
+    //controls
+    public static Integer[] features = new Integer[]{0, 1, 2, 3, 4, 5}; //which features to consider
+    public static int K = 200; //how many hypothesis to include in ensemble
 
     public static void main(String[] args) throws IOException {
 
@@ -16,15 +18,40 @@ public class lab3 {
             train(args, S);
 
         }
-        else{//predict <hypothesis> <file>
+        else if (args[0].equals("predict")){//predict <hypothesis> <file>
 
             predict(args, S);
+
+        }
+        else{//test. spit out an error percentage // test <hypothesis> <file>
+
+            String ss = S.nextLine();
+            Tree t = parseTree(ss.split(" "));
+
+            S = new Scanner(new File(args[2]));
+            ss = S.nextLine();
+
+            ArrayList<Example> exampleSpace = configureES(S, ss);
+
+            double examples = exampleSpace.size();
+            double howManyWrong = 0;
+
+            for (Example e: exampleSpace
+                 ) {
+
+                if(!exampleMatchesHypothesis(e, t))
+                    howManyWrong++;
+
+            }
+
+            System.out.println("Error: " + howManyWrong/examples + "%");
 
         }
 
 
     }
 
+    //Print out a prediction
     private static void predict(String[] args, Scanner S) throws FileNotFoundException {
         String tString = S.nextLine();
 
@@ -82,6 +109,7 @@ public class lab3 {
         }
     }
 
+    //train a decision tree or ensemble
     private static void train(String[] args, Scanner S) throws IOException {
         String hFile;
         hFile = args[2];
@@ -101,12 +129,10 @@ public class lab3 {
         else{//"ada" //adaboost
 
             ada = true;
-            int K = 500;
             t = adaBoost(exampleSpace, K); //TODO: DOCUMENT
 
         }
 
-        assert t != null;
         String tree = t.toString();
 
         writer.write(tree);
@@ -114,6 +140,7 @@ public class lab3 {
         writer.close();
     }
 
+    //parse a string of text into a tree
     private static Tree parseTree(String[] sp){
 
         String firstS = sp[0];
@@ -205,8 +232,8 @@ public class lab3 {
 
     }
 
+    //does this tree correctly predict this example
     private static boolean exampleMatchesHypothesis(Example e, Tree t){
-
 
         while(t.pred != -1){
 
@@ -231,6 +258,7 @@ public class lab3 {
 
     }
 
+    //adaboost
     private static Tree adaBoost(ArrayList<Example> examples, int K){
 
         int n = examples.size();
@@ -314,11 +342,12 @@ public class lab3 {
         //make a tree based off the ensemble
 
 
-        return vectorToTree(h);
+        return ensembleToTree(h);
 
     }
 
-    private static Tree vectorToTree(Queue<Tree> h) {
+    //essentially prop logic- a conjunction of the predicates adaboost found to weigh the most.
+    private static Tree ensembleToTree(Queue<Tree> h) {
 
         Queue<Tree> H = new PriorityQueue<>(5, new StumpComparator()); //set of hypothesis in order of weight
         int p = Objects.requireNonNull(h.poll()).pred;
@@ -347,12 +376,13 @@ public class lab3 {
         else{
 
 
-            return new Tree(p, vectorToTree(H), new Tree(-1,null, null, false), null);
+            return new Tree(p, ensembleToTree(H), new Tree(-1,null, null, false), null);
 
         }
 
     }
 
+    //sum of the values in a given double array
     private static double sum(double[] w) {
 
         double s = 0.0;
@@ -368,16 +398,16 @@ public class lab3 {
 
     }
 
-
+    //create Example objects from a file
     private static ArrayList<Example> configureES(Scanner S, String ss) {
-        ArrayList<Example> hypothesisSpace = new ArrayList<>();
+        ArrayList<Example> ES = new ArrayList<>();
 
         while(true){
 
             String[] line = ss.replaceAll("[^a-zA-Z ]", "").toLowerCase().split("\\s+");
 
             Example e = createExampleFromLine(line);
-            hypothesisSpace.add(e);
+            ES.add(e);
 
             try{
 
@@ -391,9 +421,10 @@ public class lab3 {
             }
 
         }
-        return hypothesisSpace;
+        return ES;
     }
 
+    //create Example object from a line of text
     private static Example createExampleFromLine(String[] line) {
         ArrayList<Boolean> preds = new ArrayList<>();
 
@@ -411,8 +442,8 @@ public class lab3 {
         return new Example(preds, E, line);
     }
 
-
-    private static int importance(ArrayList<Integer> attributes, ArrayList<Example> examples){//returns the index of the most important predicate
+    //which feature returns the greatest information gain from training with these examples?
+    private static int importance(ArrayList<Integer> attributes, ArrayList<Example> examples){
 
         //return the attribute with the most information gain
 
@@ -546,6 +577,7 @@ public class lab3 {
 
     }
 
+    //remainder formula from slides
     private static double remainder(int p, int n, int pk, int nk){
 
         double afd = Double.sum(pk, nk);
@@ -556,6 +588,7 @@ public class lab3 {
 
     }
 
+    //probability of a random Boolean variable B
     private static double B(int p, int pPlusn){
 
         double q = (double) p/pPlusn; //P(A = TRUE)
@@ -564,7 +597,7 @@ public class lab3 {
 
     }
 
-    //learn
+    //create a decision tree from examples
     private static Tree learn_decision_tree(ArrayList<Example> examples, ArrayList<Integer> attributes, ArrayList<Example> parent_examples){
 
         if(examples.size() == 0 && !ada){
@@ -586,7 +619,7 @@ public class lab3 {
 
             Integer A = importance(attributes, examples);
 
-            if(ada) return new Tree(A, new Tree(-1, null, null, true), new Tree(-1, null, null, false), null);
+            if(ada) return new Tree(A, new Tree(-1, null, null, true), new Tree(-1, null, null, false), null); //return a single stump
 
             attributes.remove(A);
 
@@ -608,6 +641,7 @@ public class lab3 {
 
     }
 
+    //which of these given examples are labeled as english
     private static ArrayList<Example> whichAreTrue(int a, ArrayList<Example> examples){
 
         ArrayList<Example> temp = new ArrayList<>();
@@ -623,6 +657,7 @@ public class lab3 {
 
     }
 
+    //which of these given examples are labeled as dutch
     private static ArrayList<Example> whichAreFalse(int a,ArrayList<Example> examples){
 
         ArrayList<Example> temp = new ArrayList<>();
@@ -638,6 +673,7 @@ public class lab3 {
 
     }
 
+    //return instance of most seen value (are most english or are most dutch?)
     private static Tree plurality_value(ArrayList<Example> examples){
 
         int A = 0;
@@ -671,6 +707,7 @@ public class lab3 {
 
     }
 
+    //all examples have the same classification
     private static boolean allExamplesHaveTheSameClassification(ArrayList<Example> examples){
 
         boolean startsWithA = false;

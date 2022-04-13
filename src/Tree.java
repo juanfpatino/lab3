@@ -1,5 +1,6 @@
 import java.util.Objects;
 
+//Tree object, also functions as a stump for boosted training
 public class Tree{
 
     public int pred;
